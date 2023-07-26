@@ -1,0 +1,77 @@
+master
+Message init size 148 bytes, message response size 92 bytes
+goos: linux
+goarch: amd64
+pkg: golang.zx2c4.com/wireguard/device
+cpu: 12th Gen Intel(R) Core(TM) i7-12700
+BenchmarkHandshakeServer-20         3961            376764 ns/op         6880527 B/op        338 allocs/op
+BenchmarkHandshakeClient-20         3645            464141 ns/op         7224643 B/op        424 allocs/op
+BenchmarkHandshake-20                854           1343443 ns/op        20990644 B/op       2157 allocs/op
+PASS
+ok      golang.zx2c4.com/wireguard/device       27.526s
+kyber512
+Message init size 1700 bytes, message response size 1596 bytes
+goos: linux
+goarch: amd64
+pkg: golang.zx2c4.com/wireguard/device
+cpu: 12th Gen Intel(R) Core(TM) i7-12700
+BenchmarkHandshakeServer-20         6774            233864 ns/op         3396019 B/op        278 allocs/op
+BenchmarkHandshakeClient-20         4590            341854 ns/op         4517391 B/op        313 allocs/op
+BenchmarkHandshake-20               2204            592083 ns/op         8797562 B/op        558 allocs/op
+PASS
+ok      golang.zx2c4.com/wireguard/device       64.841s
+mceliece348864f
+Message init size 261348 bytes, message response size 252 bytes
+goos: linux
+goarch: amd64
+pkg: golang.zx2c4.com/wireguard/device
+cpu: 12th Gen Intel(R) Core(TM) i7-12700
+BenchmarkHandshakeServer-20    	      56	  20823375 ns/op	  807175 B/op	     136 allocs/op
+BenchmarkHandshakeClient-20    	      13	  91599500 ns/op	 1141789 B/op	     149 allocs/op
+BenchmarkHandshake-20          	       9	 113235281 ns/op	 2473203 B/op	     289 allocs/op
+PASS
+ok  	golang.zx2c4.com/wireguard/device	34.588s
+ntrulpr653
+Message init size 2054 bytes, message response size 2110 bytes
+goos: linux
+goarch: amd64
+pkg: golang.zx2c4.com/wireguard/device
+cpu: 12th Gen Intel(R) Core(TM) i7-12700
+BenchmarkHandshakeServer-20    	      28	  40055408 ns/op	  401808 B/op	     392 allocs/op
+BenchmarkHandshakeClient-20    	      22	  51364015 ns/op	16982880 B/op	    1253 allocs/op
+BenchmarkHandshake-20          	      12	  91749833 ns/op	17089986 B/op	    1634 allocs/op
+PASS
+ok  	golang.zx2c4.com/wireguard/device	6.762s
+sntrup653
+Message init size 2023 bytes, message response size 1854 bytes
+goos: linux
+goarch: amd64
+pkg: golang.zx2c4.com/wireguard/device
+cpu: 12th Gen Intel(R) Core(TM) i7-12700
+BenchmarkHandshakeServer-20    	      40	  28665508 ns/op	   66896 B/op	     329 allocs/op
+BenchmarkHandshakeClient-20    	      14	  76325670 ns/op	16943812 B/op	    1167 allocs/op
+BenchmarkHandshake-20          	      10	 104484477 ns/op	17002880 B/op	    1516 allocs/op
+PASS
+ok  	golang.zx2c4.com/wireguard/device	11.719s
+BIKE-L1
+Message init size 3246 bytes, message response size 3206 bytes
+goos: linux
+goarch: amd64
+pkg: golang.zx2c4.com/wireguard/device
+cpu: 12th Gen Intel(R) Core(TM) i7-12700
+BenchmarkHandshakeServer-20    	     808	   1666468 ns/op	21163783 B/op	     873 allocs/op
+BenchmarkHandshakeClient-20    	     418	   3583465 ns/op	 9149684 B/op	     510 allocs/op
+BenchmarkHandshake-20          	     292	   4542259 ns/op	30122775 B/op	    1524 allocs/op
+PASS
+ok  	golang.zx2c4.com/wireguard/device	18.406s
+HQC-128
+Message init size 6862 bytes, message response size 9022 bytes
+goos: linux
+goarch: amd64
+pkg: golang.zx2c4.com/wireguard/device
+cpu: 12th Gen Intel(R) Core(TM) i7-12700
+BenchmarkHandshakeServer-20    	    2956	    427796 ns/op	 9929123 B/op	     425 allocs/op
+BenchmarkHandshakeClient-20    	    1702	    680128 ns/op	 9089663 B/op	     379 allocs/op
+BenchmarkHandshake-20          	    1377	    882871 ns/op	16064117 B/op	     691 allocs/op
+PASS
+ok  	golang.zx2c4.com/wireguard/device	26.178s

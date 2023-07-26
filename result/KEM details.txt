@@ -1,0 +1,16 @@
+Name: HQC-128
+Version: hqc-submission_2020-10-01 via https://github.com/jschanck/package-pqclean/tree/29f79e72/hqc
+Claimed NIST level: 1
+Is IND_CCA: true
+Length public key (bytes): 2249
+Length secret key (bytes): 2289
+Length ciphertext (bytes): 4481
+Length shared secret (bytes): 64
+Name: BIKE-L1
+Version: Additional - 01/27/2023
+Claimed NIST level: 1
+Is IND_CCA: false
+Length public key (bytes): 1541
+Length secret key (bytes): 5223
+Length ciphertext (bytes): 1573
+Length shared secret (bytes): 32
