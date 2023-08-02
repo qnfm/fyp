@@ -53,7 +53,24 @@ In the case where experiments have been carried out, the experimental setup and 
 
 
 \section{Results}
-
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{|l|r|r|rrr|}
+\hline
+\multirow{2}{*}{Protocol}                                                            & \multicolumn{1}{l|}{\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}Initiation size\\ (bytes)\end{tabular}}} & \multicolumn{1}{l|}{\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}Response size\\ (bytes)\end{tabular}}} & \multicolumn{3}{l|}{Time in microseconds}                                              \\ \cline{4-6} 
+                                                                                     & \multicolumn{1}{l|}{}                                                                                   & \multicolumn{1}{l|}{}                                                                                 & \multicolumn{1}{l|}{Server} & \multicolumn{1}{l|}{Client} & \multicolumn{1}{l|}{Total} \\ \hline
+\begin{tabular}[c]{@{}l@{}}WireGuard\\ (original)\end{tabular}                       & 148                                                                                                     & 92                                                                                                    & \multicolumn{1}{r|}{0.36}   & \multicolumn{1}{r|}{0.47}   & 1.37                       \\ \hline
+\begin{tabular}[c]{@{}l@{}}KEM-WireGuard\\ (kyber512 only/time-optimal)\end{tabular} & 1700                                                                                                    & 1596                                                                                                  & \multicolumn{1}{r|}{0.21}   & \multicolumn{1}{r|}{0.34}   & 0.57                       \\ \hline
+\begin{tabular}[c]{@{}l@{}}KEM-WireGuard\\ (mcliece348864f only)\end{tabular}        & 261348                                                                                                  & 252                                                                                                   & \multicolumn{1}{r|}{20.82}  & \multicolumn{1}{r|}{91.47}  & 133.36                     \\ \hline
+\begin{tabular}[c]{@{}l@{}}KEM-WireGuard\\ (ntrulpr653 only)\end{tabular}            & 2054                                                                                                    & 2110                                                                                                  & \multicolumn{1}{r|}{39.88}  & \multicolumn{1}{r|}{51.53}  & 91.40                      \\ \hline
+\begin{tabular}[c]{@{}l@{}}KEM-WireGuard\\ (sntrup653 only)\end{tabular}             & 2023                                                                                                    & 1854                                                                                                  & \multicolumn{1}{r|}{28.64}  & \multicolumn{1}{r|}{74.67}  & 103.89                     \\ \hline
+\begin{tabular}[c]{@{}l@{}}KEM-WireGuard\\ (BIKE-L1)\end{tabular}                    & 3246                                                                                                    & 3206                                                                                                  & \multicolumn{1}{r|}{1.46}   & \multicolumn{1}{r|}{3.65}   & 4.60                       \\ \hline
+\begin{tabular}[c]{@{}l@{}}KEM-WireGuard\\ (HQC-128)\end{tabular}                    & 6862                                                                                                    & 9022                                                                                                  & \multicolumn{1}{r|}{0.49}   & \multicolumn{1}{r|}{0.61}   & 0.84                       \\ \hline
+\begin{tabular}[c]{@{}l@{}}KEM-WireGuard\\ (M\&K/size-optimal)\end{tabular}          & 1028                                                                                                    & 252                                                                                                   & \multicolumn{1}{r|}{20.40}  & \multicolumn{1}{r|}{20.95}  & 41.47                      \\ \hline
+\end{tabular}
+\end{center}
+\caption{Runtime for the NIST-PQC level I primitives}
+\end{table}
 Figures that present results such as figure~\ref{fig:measurements} need to display descriptions of the axes, the units and scales of the measurements, statistical values, etc. Where measurements were taken from experiments, error bars or confidence intervals need to be provided to give the reader an indication of the spread of the measurements.
 
 \includescalefigure{fig:measurements}{Measurement of System Wakeups}{Long caption that describes the figure to the reader}{1}{measurements.png}
