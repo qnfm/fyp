@@ -1,38 +1,100 @@
 \chapter{Introduction}
 
-Introduction to the material covered in the document.
-
-\section{Style of English}
+WireGuard is an innovative secure network protocol that functions as a virtual network interface within the Linux kernel in most cases. Its primary goal is to serve as a drop-in replacement for similar secure network protocol including IPsec and OpenVPN, providing enhanced security, better performance and improved friendliness. The secure tunnel is established by binding the peer's public key with its corresponding source address. The design of WireGuard is directly deriving from the Noise framework, bearing in mind the problem of pervasive surveillance and active tampering. Also, to get over the bandwidth and computational cost , WireGuard streamline the handshake process, utilizing a single round trip to achieve security of both perfect forward secrecy (PFS) and key-compromise impersonation (K-CI) resistance. But, all these security properties only holds in the classical computer model. With the arrival of the quantum computer, it is necessary to reimage of WireGuard Diffie-Hellman (DH) style handshake to use key encapsulation mechanisms (KEMs) for implicit authentication, rather than pre-shared static key for explicit authentication. 
+This research proposes a more efficient and safer way to integrate the kem algorithm into the WireGuard protocol, in a similar manner to the kem-tls and kemtlspdk and achieve both post-quantum authentication and stronger forward secrecy. The research also instantiate with a variety of post-quantum secure KEMs based on fundamentally different mathematical assumptions. 
+\section{Motivation}
 \label{sec:StyleOfEnglish}
+\subsection{WireGuard}
+WireGuard is an upcoming project to replace IPSec with a newer more modern and secure VPN protocol. It mainly lives inside the kernel , but cross platform implementations are also available. It provides a very simple and novel interface for setting up secure encrypted network tunnels. All the cryptography primitives are cutting edge: Curve25519, ChaCha20, and Poly1305 and the complexity, as well as the sheer amount of code is ignorable. Unlike TLS, which offers backward compatibility and cryptography agility. The WireGuard hard-codes all the cryptography primitive choices. The decision to hard-code its cryptography primitives was driven by a desire for simplicity and consistency. It's one of the reasons why WireGuard has gained a reputation for performance and reliability. In the meantime, these primitives provide unparalleled degree of performance in the first place, introduce fewer dependencies and less complexity to manage which make it easier to ensure that the new design is secure and that all components of the protocol work correctly together. Furthermore, Its simplicity and minimalist design philosophy aligns well with the current state of post-quantum cryptography. Many post-quantum cryptography algorithms are still being tested and optimized, and are often more computationally intensive or require larger key sizes than their classical counterparts. Having a lightweight, efficient protocol like WireGuard as the starting point could be advantageous in balancing these new algorithms' overhead and maintaining a high-performance, secure VPN. 
+\subsection{Post-Quantum Cryptography}
+In recent years, there has been a considerable amount of research on quantum computers which can solve specific mathematical problems that are difficult for classical computers by exploiting quantum phenomena. In the foreseeable future, the large-scale quantum computer probably will bring unprecedented speed and power in computing to reality. However, this quantum edge also poses serious problems which now is so-called **quantum apocalypse** - "store now, decrypt later" within the field of post-quantum cryptography. One of such threats lies in the domain of public key cryptography. When it comes time, the quantum computer could potentially break many of the cryptography systems, which were designed and secured under the premises of classical computing. It's crucial that we adopt a proactive approach and remain one step ahead of the potential risks. We can not afford to idle until the quantum computers begin dismantling today’s public-key cryptography is running. Therefore, the goal of this project is to scrutinize the vulnerable part of the WireGuard and propose a new WireGuard which is post-quantum safe while still keeps the virtue of original WireGuard protocol. 
+The necessity for quantum safe cryptography stems from the capability of Shor's algorithm's ability to efficiently resolve problems related to factorization and discrete logarithm which are the security backbones of **RSA**, **ECC** and **ECDSA** that rely on the **IFP** (integer factorization problem), the **DLP** (discrete logarithms problem) and the **ECDLP** (elliptic-curve discrete logarithm problem) respectively. By using Shor's algorithm, a k-bit (in binary) number can be factored in time of order $O(k^3)$ using a quantum computer of 5k+1 qubits. As the NIST standardization process is ongoing [1][2], this standardization doesn't assert the supremacy of one suggestion over another. Given that the NIST standardization process has already chosen the **Selected Algorithms 2022** [3], the most secure transition method will be integrate the standardized Post-Quantum Cryptography algorithms instead of waiting for national bodies to finalize PQC algorithms in which case where the risk associated with quantum broken cryptography is not acceptable.
 
-Style of English
-An impersonal style keeps the technical factors and ideas to the forefront of the discussion and you in the background. Try to be objective and quantitative in your conclusions. For example, it is not enough to say vaguely “because the compiler was unreliable the code produced was not adequate”. It would be much better to say “because the XYZ compiler produced code which ran 2-3 times slower than PQR (see Table x,y), a fast enough scheduler could not be written using this algorithm”. The second version is more likely to make the reader think the writer knows what he/she is talking about, since it is a lot more authoritative. Also, you will not be able to write the second version without a modicum of thought and effort.
+%The following points are couple of {\it Do's \& Dont's} that I have noted down as feedback to reports over the years. The focus of this list is to encourage writers to be specific in writing reports - some of this is motivated by Strunk and White's The Elements of Style~(\cite{strunk}). Regarding reports that are submitted as part of a degree, examiners have to read and mark these reports - make it easy for these examiners to give good marks by following a number of simple points:
 
-The following points are couple of {\it Do's \& Dont's} that I have noted down as feedback to reports over the years. The focus of this list is to encourage writers to be specific in writing reports - some of this is motivated by Strunk and White's The Elements of Style~(\cite{strunk}). Regarding reports that are submitted as part of a degree, examiners have to read and mark these reports - make it easy for these examiners to give good marks by following a number of simple points:
+% \begin{description}
+% 	\item [Acronyms:] Acronyms should be introduced by the words they represent followed by the acronym in capitals enclosed in brackets e.g. "...TCP (Transmission Control Protocol)..." $\Rightarrow$  "... Transmission Control Protocol (TCP)..."
+% 	\item [Contractions:] I would generally suggest to avoid contractions such as "I'd", "They've", etc in reports. In some cases, they are ambiguous e.g. "I'd" $\Rightarrow$ "I would" or "I had" and can lead to misunderstandings.
+% 	\item [Avoid "do":] Be specific and use specific verbs to describe actions.
+% 	\item [Adverbs:] Adverbs and adjectives such as "easily", "generally", etc should be removed because they are unspecific e.g. the statement "can be easily implemented" depends very much on the developer. 
+% 	\item [Articles:] "A" and "an" are indefinite articles; they should be used if the subject is unknown. "The" is a definite article; which should be used if a specific subject is referred to. For example, the subject referred to in "allocated by the coordinator" is not determined at the time of writing and so the sentences should be changed to "allocated by a coordinator".
+% 	\item [Avoid brackets:] Brackets should not be used to hide sub-sentences, examples or alternatives. The problem with this use of brackets is that it is not specific and keeps the reader guessing the exact meaning that is intended. For example "... system entities (users, networks and services) through ..." should be replaced by "... system entities such as users, networks, and services through ...".
+% 	\item [Figures:] Figures and graphs should have sufficient resolution; figures with low resolution appear blurred and require the reader to make assumptions.
+% 	\item  [Captions:] Use captions to describe a figure or table to the reader. The reader should not be forced to search through text to find a description of a figure or table. If you do not provide an interpretation of a figure or table, the reader will make up their own interpretation and given Murphy's law, will arrive at the polar opposite of what was intended by the figure or table.
+% 	\item [Backgrounds:] Backgrounds of figures and snapshots of screens should be light. Developers often use terminals or development environments with dark backgrounds. Snapshots of these terminals or developments are difficult to read when placed into a report. 
+% 	\item [Titles:] Titles of section should never be followed immediately by another title e.g. a title of a chapter should be followed by text describing the content and relevance of the sections of the chapter and could then be followed by the title of the first section of the chapter.
+% 	\item [Punctuation:] A statement is concluded with a period; a question with a question mark.  
+% 	\item [Spellcheckers:] Use a spellchecker!
+% \end{description}
 
+
+\section{Goals} 
+The major goal of this thesis is to add post-quantum cryptography into WireGuard, aiming to uphold perfect forward secrecy (PFS), secrecy, authenticity, and even security against active attacks. In the current version of WireGuard, there is an efficient approach [4] applying to the WireGuard protocol that can achieve transitional post-quantum security to the WireGuard via utilizing optional pre-shared key (PSK) value. This key, calculated independently of the key agreement protocol, could be used to initialize a PQ key exchange [4]  In order to address this issue, it is necessary to integrate PQ key agreements directly into the WireGuard protocol. 
+While addressing these primary goals, the secondary objectives revolve around maintaining optimal performance and usability. These aspects should be preserved as effectively as possible, even while achieving the main goals. Thus, this thesis strives to keep a balance between advancing WireGuard's security measures to confront quantum threats, without compromising its hallmark simplicity and performance.
+% The arranging of figures in Latex can lead to spending a lot of time on minor issues e.g. positioning a figure in a specific location on a page, fixing minor issues with an exact size of a figure, etc. Figure~\ref{fig:ImageOfAChick} provides a simple example that demonstrates the use of one of two macros for handling figures, called {\it includefigure}; the other macro,  {\it includescalefigure}, is demonstrated in chapter~\ref{chap:Evaluation}. Figures should always be readable without magnification when printed and the resolution of an image should be sufficient to provide a clear picture when printed.
+
+% \includefigure{fig:ImageOfAChick}{An Image of a chick}{A caption should describe the figure to the reader and explain to the reader the meaning of the figure. A Sub-clause of Murphy's Law: If the interpretation of a figure is left to a reader, the reader will misinterpret the figure, feel insulted or decide to ignore it. Do not leave it up to the reader!}{image.png}
+
+
+\section{Contribution}
+
+In this thesis, we introduce KEM-WireGuard, a generic post-quantum augmentation to the WireGuard protocol. This innovation not only improves the security design to keep secret against quantum attacks, as done in previous attempts at transitioning to post-quantum security, but also ambitiously aims for comprehensive post-quantum security, encompassing authentication as well. We also present the KEM-based instantiation of post-quantum WireGuard using Golang native cryptographic library - CIRCL (Cloudflare Interoperable Reusable Cryptographic Library). We focus on a coherent and cohesive implementation while considering the unique characteristics of different KEMs. We employ various combinations of KEMs to maximize the utilization of their unique performance and key size characteristics, with the ultimate goal of achieving optimal bandwidth and performance.
+Our approach involves benchmarking and comparing various instantiations of the post-quantum WireGuard variants with previous implementations of PQ-WireGuard and the original WireGuard. A important consideration is to align as closely as possible to the original WireGuard protocol in terms of its security, performance metrics and handshake flow. Consequently, it should :
+\begin{itemize}
+\item Attain all the safety characteristics of WireGuard while also being resilient against attacks by a large-scale quantum computer
+\item Reach a firm decision on the cryptographic primitives explicitly, thereby eliminating the need for an cryptographic negotiation.
+\item Reduce the on-wire format size as well as the memory consumption.
+\end{itemize}
+The original WireGuard protocol heavily relies on the Elliptic Curve Diffie-Hellman key exchange, which is not a simple task to substitute with post-quantum ones. It's important to note that while the application of post-quantum algorithms in the WireGuard protocol may increase security margin , it's crucial to carefully evaluate their implementation and performance to ensure they meet the necessary standards for secure communication.  Given that SIDH/SIKE can be compromised in classical polynomial time, it's definitely left out of the consideration. The only feasible post-quantum  key exchange is CSIDH, but its security is relatively new and unproven. So we decided to follow the results of previous research on kem, modifying the WireGuard protocol to use interactive key-encapsulation mechanisms (KEMs) exclusively.
+[todo]
+The security of WireGuard is upheld by Donenfeld and Milner's symbolic proof and the computational proof provided by Dowling and Paterson. Although the symbolic proof encompasses a wider range of security properties and is computer verified, the computational proof, when correct, ensures robust security assurances as it relies on fewer idealized assumptions. We adapt both proofs to the PQ-WireGuard scenario, thereby maintaining WireGuard's level of security guarantees. During this process, we identify and rectify a few minor errors in the computational proof. To facilitate a standalone proof of the handshake, we incorporate an explicit key confirmation message into the PQ-WireGuard handshake as recommended.
+
+\section{Structure}
 \begin{description}
-	\item [Acronyms:] Acronyms should be introduced by the words they represent followed by the acronym in capitals enclosed in brackets e.g. "...TCP (Transmission Control Protocol)..." $\Rightarrow$  "... Transmission Control Protocol (TCP)..."
-	\item [Contractions:] I would generally suggest to avoid contractions such as "I'd", "They've", etc in reports. In some cases, they are ambiguous e.g. "I'd" $\Rightarrow$ "I would" or "I had" and can lead to misunderstandings.
-	\item [Avoid "do":] Be specific and use specific verbs to describe actions.
-	\item [Adverbs:] Adverbs and adjectives such as "easily", "generally", etc should be removed because they are unspecific e.g. the statement "can be easily implemented" depends very much on the developer. 
-	\item [Articles:] "A" and "an" are indefinite articles; they should be used if the subject is unknown. "The" is a definite article; which should be used if a specific subject is referred to. For example, the subject referred to in "allocated by the coordinator" is not determined at the time of writing and so the sentences should be changed to "allocated by a coordinator".
-	\item [Avoid brackets:] Brackets should not be used to hide sub-sentences, examples or alternatives. The problem with this use of brackets is that it is not specific and keeps the reader guessing the exact meaning that is intended. For example "... system entities (users, networks and services) through ..." should be replaced by "... system entities such as users, networks, and services through ...".
-	\item [Figures:] Figures and graphs should have sufficient resolution; figures with low resolution appear blurred and require the reader to make assumptions.
-	\item  [Captions:] Use captions to describe a figure or table to the reader. The reader should not be forced to search through text to find a description of a figure or table. If you do not provide an interpretation of a figure or table, the reader will make up their own interpretation and given Murphy's law, will arrive at the polar opposite of what was intended by the figure or table.
-	\item [Backgrounds:] Backgrounds of figures and snapshots of screens should be light. Developers often use terminals or development environments with dark backgrounds. Snapshots of these terminals or developments are difficult to read when placed into a report. 
-	\item [Titles:] Titles of section should never be followed immediately by another title e.g. a title of a chapter should be followed by text describing the content and relevance of the sections of the chapter and could then be followed by the title of the first section of the chapter.
-	\item [Punctuation:] A statement is concluded with a period; a question with a question mark.  
-	\item [Spellcheckers:] Use a spellchecker!
+
+\item Chapter 1: Introduction
+
+1.1 Background and Motivation \\
+1.2 Problem Statement\\
+1.3 Objectives\\
+1.4 Overview of WireGuard\\
+1.5 Structure of the Thesis
+
+\item Chapter 2: Literature Review and Preliminary Concepts
+
+2.1 Review of Post-Quantum Cryptography\\
+2.2 Existing Post-Quantum VPN Software\\
+2.3 Key Algorithms, Definitions, Protocols, and Cryptographic Primitives\\
+2.4 Challenges in Implementing Post-Quantum Cryptography in VPNs
+
+\item Chapter 3: Proposed Changes to WireGuard
+
+3.1 Design Goals of PQ-WireGuard\\
+3.2 From Diffie-Hellman to Key-Encapsulation Mechanisms (KEMs)\\
+3.3 PQ-WireGuard Handshake Protocol\\
+3.4 Security Analysis
+
+\item Chapter 4: Implementation Decisions
+
+4.1 Choice of Cryptographic Primitives 
+4.2 Dealing with Challenges and Limitations 
+4.3 Prototype Implementation and Testing
+
+\item Chapter 5: Critical Analysis and Evaluation
+
+5.1 Performance Analysis: PQ-WireGuard vs. WireGuard 
+5.2 Analysis of Security Features 
+5.3 Future Quantum Threat Model Analysis 
+5.4 Average Time to Perform the Handshake
+
+\item Chapter 6: Conclusion and Future Work
+
+6.1 Summary of Findings\\
+6.2 Implications and Significance\\
+6.3 Limitations\\
+6.4 Recommendations for Future Research
+
+\item References:** [A list of references cited throughout the thesis.]
+
+\item Appendices:** [Any supplementary material.]
 \end{description}
-
-
-\section{Figures} 
-
-The arranging of figures in Latex can lead to spending a lot of time on minor issues e.g. positioning a figure in a specific location on a page, fixing minor issues with an exact size of a figure, etc. Figure~\ref{fig:ImageOfAChick} provides a simple example that demonstrates the use of one of two macros for handling figures, called {\it includefigure}; the other macro,  {\it includescalefigure}, is demonstrated in chapter~\ref{chap:Evaluation}. Figures should always be readable without magnification when printed and the resolution of an image should be sufficient to provide a clear picture when printed.
-
-\includefigure{fig:ImageOfAChick}{An Image of a chick}{A caption should describe the figure to the reader and explain to the reader the meaning of the figure. A Sub-clause of Murphy's Law: If the interpretation of a figure is left to a reader, the reader will misinterpret the figure, feel insulted or decide to ignore it. Do not leave it up to the reader!}{image.png}
-
-
-\section{Structure \& Contents}
-
-At the end of the introduction, a layout of the structure and the contents of the following chapters should be provided for the reader. The overall goal of all descriptions of contents that follows these descriptions is to prepare the reader. The reader should not be surprised by any content that is being presented and should always know how content that is currently being read fits within an overall dissertation.

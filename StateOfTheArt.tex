@@ -1,25 +1,45 @@
 \chapter{State of the Art}
 
-At the beginning of each chapter, a description should introduce the reader to the content of the chapter. The description should explain to the reader the layout of the chapter, the contribution that the chapter makes to the overall dissertation and the contribution of the individual sections towards the overall chapter.
-
-From the perspective of this document forming part of your degree, this chapter should demonstrate to the reader your knowledge of the area of your dissertation project. It should present your knowledge in a coherent and detailed form. The reader should understand that you have in-depth knowledge of the area of the dissertation without being overloaded with information.
+\section{Quantum Algorithms}
 
 \section{Background}
+\subsection{Shor's Algorithm}
 
-A section on the background of the dissertation should provide the reader with an introduction to existing technologies and concepts that form the basis of the
-work presented in the dissertation.
+Shor's algorithm, introduced by mathematician Peter Shor in 1994, is a quantum algorithm which can efficiently solve the factoring problem (get p and q from \noindent\(\pmb{n=p*q}\)) and the discrete logarithm problem (get e from \noindent\(\pmb{x=\text{Mod}\left[g^e,p\right]}\)). It has the potential to render all widely deployed key agreement and digital signature schemes, which are both critical to the security of the Internet, obsolete, including RSA and elliptic curve cryptography. The major application of Shor's algorithm lies in its ability to find the prime factors of large numbers, a task that is exceptionally difficult for classical computers to perform. Shor's algorithm, when run on a sufficiently powerful quantum computer, can factorize these large numbers exponentially faster than the best known classical algorithm.
+Consequences of Shor’s algorithm in terms of its security, performance metrics and handshake flow:
+\begin{itemize}
+\item Quantum order-finding algorithm can be implemented in $O(n^3)$ quantum gate steps ($k= \log{}n$), namely within **bounded-error quantum polynomial time** (**BQP**).
+\item Factoring is solvable in quantum polynomial time.
+\item Modified Shor can also solve discrete logarithm problem, which means it totally breaks discrete log-based and elliptic curve cryptography.
+\end{itemize}
+Therefore ,the underlying basis of many modern public key cryptographic systems, including RSA, DSA, and elliptic-curve cryptography (ECC), rests on the difficulty of the integer factorization or the discrete logarithm problem, will be dead in the presence of a large-scale quantum computer, thus providing a significant impetus for the development of post-quantum cryptography.
+\subsection{Grover's Algorithm}
+Grover's algorithm, devised by Lov Grover in 1996, is another significant quantum algorithm. It uses amplitude amplification to efficiently perform unstructured search to pinpoint the unique input for a black box function that leads to the corresponding output. Meanwhile, While a classical computer would need $O(n)$ steps to complete the search, Grover offers a quadratic speedup over classical algorithms for similar search problems. In cryptographic terms, Grover's algorithm can effectively halve the key length of symmetric cryptographic systems, reducing, for example, the security level of a 256-bit key to that of a 128-bit key in classical terms.
+The application of Grover's algorithm could seriously jeopardize symmetric key algorithms by significantly speeding up exhaustive key search attacks or brute force attacks, effectively halving the cryptographic key length. For an n-bit symmetric cryptographic algorithm, there are $2^n$ possible keys. With the current computing platforms, the key range of $2^128$ for a 128-bit AES algorithm is virtually uncrackable. However, with the advent of quantum platforms and the implementation of Grover's algorithm, the security level of AES's 128-bit key size would effectively be reduced to an insecure 64-bit equivalent key length. Fortunately, most symmetric key algorithms provide additional key lengths, enabling applications to shift to the more secure versions.
+Hash algorithms are also likely to be impacted by Grover's algorithm, given their nature of producing a fixed-sized output from inputs of arbitrary size. The enhanced pace of Grover's algorithm could potentially speed up collision attacks, which involve identifying two distinct inputs that yield the same output. The emergence of quantum-based platforms also poses a challenge for hash algorithms. However, hash functions such as SHA-256, which yields a 256-bit output, and SHA-512, with a 512-bit output, appear to remain resistant to quantum attacks due to their longer output lengths.
+
+However, unlike Shor's algorithm, Grover's algorithm doesn't pose an existential threat to all symmetric cryptographic systems. The serial processing requirement of Grover's algorithm limits its impact on the symmetric cryptography. Additionally, the threat can be mitigated by simply doubling the key length, a change that would impose minimal overhead on modern computational systems but exponentially increases the time required by Grover's algorithm to find a match.
+
+In conclusion, the advent of Grover's algorithm indeed underlines the need for transitioning to post quantum cryptographic systems that can withstand quantum adversaries, but it has less devastating effect comparing to Shor's algorithm.
+
+\section{Related work}
+WireGuard's foundational construct is the authenticated key exchange, a critical part that determines the overall security of the protocol. Authenticated key exchange is a cryptographic method that allows two entities to securely derive a shared secret over an insecure channel. An famous type of AKE  is the (Elliptic Curve) Diffie-Hellman key exchange, which is favored for its flexibility and ability to offer security attributes like forward secrecy. Currently, many practical AKE protocols are built on DH implementations, including WireGuard. 
+As we will move into the post-quantum era soon, relying on the security of the Diffie-Hellman assumption becomes unreasonable. Thus, it is crucial to transition towards post-quantum cryptographic (PQC) alternatives that are believed to resist quantum computer attacks. The research community has put great effort into this area. NIST's Post-Quantum Cryptography Standardization ahs split the public-key cryptosystems into public key encryption and key establishment algorithms since round 2 Submissions. The result of this process is **Selected Algorithms 2022** [3]: **CRYSTALS-KYBER** for public key encryption,**CRYSTALS-DILITHIUM** for digital signature algorithm plus **Round 4 Submission** [r4]. Considering the mathematical categories of the remained algorithms, they all fall within three mathematical assumptions:
+Hash-based solutions use a hash function to take variable size input into an diffused, variable size output. Hash functions are also called one-way functions as they are not easily (i.e. computationally complex) computed in reverse. This is what makes them very useful in authenticating signatures. 
+Lattice-based solutions are based on a set of  defined basis vectors (think distance and  direction) that generate a whole set. The security of lattice-based solutions relies on the difficulty of computing the Shortest Vector Problem (SVP).  A small amount of noise is added into the computations to make it extremely difficult to recover the secret even if one was given the random matrix and resultant vector. This is called learning with errors (LWE). Variants of this problem included Ring-LWE, Module-LWE, and LWR or Learning with Rounding.
+
+The two security aspects of AKE are confidentiality and authentication. PQC digital signature schemes 
+and there exists three forms of authenticated key exchanges based on their construction and the latest results of NIST PQC process:
 
 
-\section{Closely-Related Work}
-
-Work in research areas tends to address a number of specific aspects. Ideally, the discussion of published research should focus on the aspects that have been addressed by various publications - and not a discussion of the individual publications.
-
-For example, if the topic would be a discussion of work on programming languages, the subsections of the related work could be discussions of object orientation and its realisation in various languages or the use of lambda functions by these languages.
-
-\subsection{Aspect \#1}
+\subsection{Transitional post-quantum constructions}
+A popular approach to transitional post-quantum security is to combine ECDH with a post-quantum primitive, forming a hybrid quantum-classical cryptography. This approach provides the benefits of the well-studied classical security while also providing a layer of post-quantum security via the use of a post-quantum algorithm. In [BBF2018], Bindel, Brendel, Brendel, Goncalves, Stebila established the models for hybrid authenticated key exchange protocols. Also, Google and [Cloudflare] conducted the [CECPQ2] experiment that intended to help evaluate the combination of [X25519] and a post-quantum key-agreement based on [NTRU-HRSS-KEM] a plugin for the TLS key-agreement part. This experiment implemented two hybrid quantum-classical key exchanges: [CECPQ2](lattice-based NTRU-HRSS + X25519)and [CECPQ2b] (isogeny-based SIKE + X25519), integrated them into their TLS stack and deployed on their servers and in Chrome Canary clients. The post-quantum components are KEM-based algorithms and the final shared secrets are concatenate and combine with HKDF(HMAC-based Extract-and-Expand Key Derivation Function). 
+Crockett, Paquin, Stebila [CPS2019] prototyped and inspected different design of combining classical and post-quantum algorithms. 
 
 
-\subsection{Aspect \#2}
+\subsection{KEM-based authenticated key exchange constructions}
+Typically, The underlining algebraic structures of some PQC can provide a Public Key Encryption (PKE), which can then be converted into a Key Encapsulation Mechanism (KEM) through a standard transformation construction. However, a particular characteristic of these algebraic structures used in many post-quantum PKEs and KEMs lead to malleable ciphertexts, expose them to chosen-ciphertext attacks (CCA) [HNP+03]. To counter the effect, the most common way is to apply the Fujisaki-Okamoto (FO) transform or its variants and upgrade OW-CPA security to IND-CCA2 security. In 2018,[HKS+2018], Hövelmanns, Kiltz, Schäge and Unruh proposed a modification of Fujisaki-Okamoto AKE that can turn any deterministic PKE into FO-like IND-CCA secure KEMs in the quantum random oracle model. And Bindel, Hamburg, Hövelmanns, Hülsing, Persichetti tighten the bound and extended their result to the case of non-deterministic PKEs or PKEs feature decryption failure. There are excellent examples show that KEM is a drop-in replacement alternative to build the ability of key agreement without the traditional signature schemes and Diffie-Hellman key agreement schemes. In [SSW2022],  Schwabe, Stebila, Wiggers introduce KEMTLS, a novel approach to implement handshake protocol of the TLS 1.3 that make full of IND-CCA-secure KEMs as a new way of sever/client authentication instead of signatures. In 2021, Hülsing, Ning, Schwabe present PQ-WireGuard that filled the emptiness in the area of post-quantum authentication.
+
 
 \section{Summary}
 

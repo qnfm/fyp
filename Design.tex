@@ -1,27 +1,145 @@
 \chapter{Design}
 \label{chap:Design}
 
-At the beginning of each chapter, a description should introduce the reader to the content of the chapter. The description should explain to the reader the layout of the chapter, the contribution that the chapter makes to the overall dissertation and the contribution of the individual sections towards the overall chapter.
+As outlined in Sections I and II, the WireGuard handshake is heavily based on DH, which does not have an efﬁcient and well established post-quantum equivalent. Hence, in this section we describe how we replace DH by KEMs, for which well-established, efficient post-quantum instantiations exist.
+We start by considering a simpliﬁed view on the core of the DH-based WireGuard handshake.
 
 
-\section{Problem Formulation}
+\section{Secuirt Aspect}
 \label{sec:ProblemFormulation}
+The primary goal of the adaptations proposed in this thesis is to provide security against post quantum attackers, who already are probably recording traffic at the current time for later decryption. Therefore, the necessary security properties that need to be guaranteed are listed below
 
-This section should provide the reader with an overall description of the problem that will be addressed in the dissertation. In contrast to a generic discussion of the dissertation topic in the Introduction chapter, this section should provide a detailed discussion of the problem that has been identified based on the existing work that has been discussed in the preceeding chapter. 
+\subsection{Secrecy}
+Three key encapsulations using the keypairs \texttt{sski}/\texttt{spki},
+\texttt{sskr}/\texttt{spkr}, and \texttt{eski}/\texttt{epki} provide
+secrecy. Their respective ciphertexts are called \texttt{scti},
+\texttt{sctr}, and \texttt{ectr} and the resulting keys are called
+\texttt{spti}, \texttt{sptr}, \texttt{epti}. A single secure
+encapsulation is sufficient to provide secrecy. We use two different
+KEMs: Kyber and Classic McEliece.
 
-In some dissertations, it may make sense to convert this section into a short chapter of its own which follows the discussion of the existing work and preceeds the discussion of the work of the dissertation.
+\subsection{Authenticity}
+The key encapsulation using the keypair \texttt{sskr}/\texttt{spkr}
+authenticates the responder from the perspective of the initiator. The KEM encapsulation \texttt{sski}/\texttt{spki} authenticates the
+initiator from the perspective of the responder. Authenticity is based
+on the security of Classic McEliece alone.
+\subsection{Pre-Shared Symmetric Key}
+We allow the use of a pre-shared key (\texttt{psk}) as protocol input.
+Even if all asymmetric security primitives turn out to be insecure,
+providing a secure \texttt{psk} will have KEM-WireGuard authenticate both
+peers, and output a secure shared key.
+\subsection{Forward Secrecy}
+Forward secrecy refers to secrecy of past sessions in case all static
+keys are leaked. Imagine an attacker recording the network messages sent
+between two devices, developing an interest in some particular exchange,
+~and stealing both computers in an attempt to decrypt that conversation.
+By stealing the hardware, the attacker gains access to \texttt{sski},
+\texttt{sskr}, and the symmetric secret \texttt{psk}. Since the
+ephemeral keypair \texttt{eski}/\texttt{epki} is generated on the fly
+and deleted after the execution of the protocol, it cannot be recovered
+by stealing the devices, and thus, KEM-WireGuard provides forward secrecy.
+Forward secrecy relies on the security of Kyber and on proper
+zeroization, i.e., the implementation must erase all temporary
+variables.
+\subsection{Security against State Disruption Attacks}
 
-\subsection{Identified Challenges}
-This section should present a short description of the gaps in the existing work and the relationship of these gaps to the work described in this dissertation.
+Both WireGuard and PQ-WireGuard are vulnerable to state disruption attacks; they rely
+on a timestamp to protect against replay of the first protocol message.
+An attacker who can tamper with the local time of the protocol initiator
+can inhibit future handshakes, rendering the initiator's static keypair practically useless. Due to the use of the insecure NTP
+protocol, real-world deployments are vulnerable to this attack. Lacking a reliable way to detect retransmission,
+we remove the replay protection mechanism and store the responder state
+in an encrypted cookie called ``the biscuit'' instead. Since the
+responder does not store any session-dependent state until the initiator
+is interactively authenticated, there is no state to disrupt in an
+attack.
 
-\subsection{Proposed Work}
-This section should provide a thorough description of the problem and an overview of the work proposed to address the problem.
+Note that while KEM-WireGuard is secure against state disruption, using it
+does not protect WireGuard against the attack. Therefore, the hybrid
+KEM-WireGuard/WireGuard setup recommended for deployment is still
+vulnerable.
+
+\subsection{Cryptographic Building Blocks}
+All symmetric keys and hash values used in KEM-WireGuard are 32 bytes long.
+\subsubsection{Hash}
+
+A keyed hash function with one 32-byte input, one variable-size input,
+and one 32-byte output. As keyed hash function we use the HMAC
+construction {[}@rfc\_hmac{]} with BLAKE2s {[}@rfc\_blake2{]} as the
+inner hash function.
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\begin{tcolorbox}[colback=gray!]
+\NormalTok{hash(key, data) {-}\textgreater{} key}
+\end{tcolorbox}
+
+\subsubsection{XAEAD}
+
+Authenticated encryption with additional data for use with random
+nonces. We use XChaCha20Poly1305 {[}@draft\_xchachapoly{]} in the
+implementation, a construction also used by WireGuard.
+
+
+\begin{tcolorbox}[colback=gray!]
+\NormalTok{hash(key, data) {-}\textgreater{} key}
+\NormalTok{XAEAD::enc(key, nonce, plaintext, additional\_data) {-}\textgreater{} ciphertext}
+\NormalTok{XAEAD::dec(key, nonce, ciphertext, additional\_data) {-}\textgreater{} plaintext}
+\end{tcolorbox}
+\subsubsection{SKEM}
+'Key Encapsulation Mechanism'(KEM) is the name of an interface widely
+used in post-quantum-secure protocols. KEMs can be seen as asymmetric
+encryption specifically for symmetric keys. KEM-WireGuard uses two different
+KEMs. SKEM is the key encapsulation mechanism used with the static
+keypairs in KEM-WireGuard. The public keys of these keypairs are not
+transmitted over the wire during the protocol. We use Classic McEliece
+460896 {[}@mceliece{]} which claims to be as hard to break as 192-bit
+AES. As one of the oldest post-quantum-secure KEMs, it enjoys wide trust
+among cryptographers, but it has not been chosen for standardization by
+NIST. Its ciphertexts and private keys are small (188 bytes and 13568
+bytes), and its public keys are large (524160 bytes). This fits our use
+case: public keys are exchanged out-of-band, and only the small
+ciphertexts have to be transmitted during the handshake.
+
+
+\begin{tcolorbox}[colback=gray!]
+\NormalTok{SKEM::enc(public\_key) {-}\textgreater{} (ciphertext, shared\_key)}
+\NormalTok{SKEM::dec(secret\_key, ciphertext) {-}\textgreater{} shared\_key}
+\end{tcolorbox}
+
+\subsubsection{EKEM}
+
+Key encapsulation mechanism used with the ephemeral KEM keypairs in
+KEM-WireGuard. The public keys of these keypairs need to be transmitted over
+the wire during the protocol. We use Kyber-512 {[}@kyber{]}, which has
+been selected in the NIST post-quantum cryptography competition and
+claims to be as hard to break as 128-bit AES. Its ciphertexts, public
+keys, and private keys are 768, 800, and 1632 bytes long, respectively,
+providing a good balance for our use case as both a public key and a
+ciphertext have to be transmitted during the handshake.
+
+
+\begin{tcolorbox}[colback=gray!]
+\NormalTok{EKEM::enc(public\_key) {-}\textgreater{} (ciphertext, shared\_key)}
+\NormalTok{EKEM::dec(secret\_key, ciphertext) {-}\textgreater{} shared\_key}
+\end{tcolorbox}
+
+Using a combination of two KEMs -- Classic McEliece for static keys and
+Kyber for ephemeral keys -- results in large static public keys, but
+allows us to fit all network messages into a single IPv6 frame.
+
+KEM-WireGuard uses libsodium {[}@libsodium{]} as cryptographic backend for
+hash, AEAD, and XAEAD, and liboqs {[}@liboqs{]} for the
+post-quantum-secure KEMs.
 
 
 \section{Overview of the Design}
 \label{sec:OverviewOfDesign}
 A description of the approach that addresses the problem identified above.
-
+\begin{figure}[!htb]
+\centering
+\captionsetup{justification=centering}
+\includestandalone{kem_protocol}
+\caption{Generic KEM-WireGuard deisgn}
+\end{figure}
 
 \section{Summary}
 \label{sec:SummaryDesign}

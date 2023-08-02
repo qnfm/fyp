@@ -843,18 +843,18 @@
 %%%
 %%% Command to print draft version of the thesis.
 %%%
-\newcommand{\thesisdraft}{
-    \setlength{\topmargin}{0in}
-    \setlength{\headheight}{0.2in}
-    \setlength{\headsep}{0.25in}
-    \renewcommand{\@textpagestyle}{myheadings}
-    \def\ps@myheadings{%
-     \let\@oddfoot\@empty\let\@evenfoot\@empty
-     \def\@oddhead{\textsl{Draft of \timestamp}\hfil\thepage}%
-     \let\@mkboth\@gobbletwo
-     \let\chaptermark\@gobble
-     \let\sectionmark\@gobble}
-    }
+% \newcommand{\thesisdraft}{
+%     \setlength{\topmargin}{0in}
+%     \setlength{\headheight}{0.2in}
+%     \setlength{\headsep}{0.25in}
+%     \renewcommand{\@textpagestyle}{myheadings}
+%     \def\ps@myheadings{%
+%      \let\@oddfoot\@empty\let\@evenfoot\@empty
+%      \def\@oddhead{\textsl{Draft of \timestamp}\hfil\thepage}%
+%      \let\@mkboth\@gobbletwo
+%      \let\chaptermark\@gobble
+%      \let\sectionmark\@gobble}
+%     }
 
 %%%
 %%% Code to compute current timestamp.  Some parts by Martin Minow.
