@@ -57,7 +57,7 @@
 \draw[-latex,thick,align=center] ($(hs2End.south) + (0, -4)$) -- ($(hs2SEnd.south) + (0, -4)$) node [pos=0.5, above]{$AEAD_{K_2^{'}}.Enc$(application data)};
 \draw[-latex,thick,align=center] ($(hs2SEnd.south) + (0, -5)$) -- ($(hs2End.south) + (0, -5)$) node [pos=0.5, above]{$AEAD_{K_2^{''}}.Enc$(key confirmation)};
 \draw[-latex,thick,align=center] ($(hs2SEnd.south) + (0, -6)$) -- ($(hs2End.south) + (0, -6)$) node [pos=0.5, above]{$AEAD_{K_2^{'''}}.Enc$(application data)};
-\node[below right, align=left] (captions) at ($(hs2End.south) + (0, -7)$){KEM.Ephemaral: Kyber\\KEM.Client: Classic McEliece\\KEM.Server: Classic McEliece\\};
+\node[below right, align=left] (captions) at ($(hs2End.south) + (0, -7)$){KEM.Ephemeral: Kyber\\KEM.Client: Classic McEliece\\KEM.Server: Classic McEliece\\};
  
 % verification if the session key is the same
 %\node[box,below] (verifServer) at ($(processClient.south) + (10,-1)$) {Verify $M_1$\\ $M_2 \gets \hash(A, M_1, s_k)$};
