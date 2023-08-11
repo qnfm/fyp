@@ -1,0 +1,15 @@
+\documentclass{article}
+\usepackage{multirow}
+\begin{document}
+\begin{table}[]
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+Algorithm        & Family  & Status       & Advantage       & Drawback         \\ \hline
+CRYSTALS-Kyber   & Lattice & NIST winner  & Secure, Fastest &                  \\ \hline
+BIKE             & Code    & NIST round 4 & Secure          &                  \\ \hline
+Classic McEliece & Code    & NIST round 4 & Secure          & Large keys, Slow \\ \hline
+HQC              & Code    & NIST round 4 & Secure, Fast    &                  \\ \hline
+SIKE             & Isogeny & NIST round 4 & Insecure        & Broken           \\ \hline
+\end{tabular}
+\end{table}
+\end{document}
