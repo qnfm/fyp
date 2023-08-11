@@ -3,12 +3,12 @@
 \usepackage{amsmath}
 \newcommand{\altura}{.45cm}
 \usetikzlibrary{calc}
-
+\usetikzlibrary{backgrounds}
 \def\hash{\mathrm{H}}
 
 \begin{document}
 
-\begin{tikzpicture}[yscale=.9,xscale=.7]
+\begin{tikzpicture}[yscale=.9,xscale=.7,framed]
 \tikzstyle{box}=[draw,fill=white, rectangle, rounded corners=3pt, align=left, minimum width=5.7cm, minimum height=.8cm]
  \tikzstyle{nome}=[draw, rectangle,anchor=west, minimum height=\altura,minimum width=9cm]
 % Public parameters and password
@@ -53,10 +53,10 @@
 
 \node[below right, align=left] (processClient) at (hs2End){$ss_C \gets KEM_C.Decap(ct_C,sk_C)$\\$ct_e\gets AEAD_{K_1}.Dec(ct_{ct_e})$\\$ss_C\gets KEM_C.Decap(ct_C,sk_C)$};
 
-\draw[-latex,align=center] ($(hs2End.south) + (0, -3)$) -- ($(hs2SEnd.south) + (0, -3)$) node [pos=0.5, above]{$K_2,K_2^{'},K_2^{''},K_2^{'''}\gets KDF(ss_S||ss_e||ss_C)$\\$AEAD_{K_2}.Enc$(key confirmation)};
-\draw[-latex,align=center] ($(hs2End.south) + (0, -4)$) -- ($(hs2SEnd.south) + (0, -4)$) node [pos=0.5, above]{$AEAD_{K_2^{'}}.Enc$(application data)};
-\draw[-latex,align=center] ($(hs2SEnd.south) + (0, -5)$) -- ($(hs2End.south) + (0, -5)$) node [pos=0.5, above]{$AEAD_{K_2^{''}}.Enc$(key confirmation)};
-\draw[-latex,align=center] ($(hs2SEnd.south) + (0, -6)$) -- ($(hs2End.south) + (0, -6)$) node [pos=0.5, above]{$AEAD_{K_2^{'''}}.Enc$(application data)};
+\draw[-latex,align=center] ($(hs2SEnd.south) + (0, -3)$) -- ($(hs2End.south) + (0, -3)$) node [pos=0.5, above]{$K_2,K_2^{'},K_2^{''},K_2^{'''}\gets KDF(ss_S||ss_e||ss_C)$\\$AEAD_{K_2}.Enc$(key confirmation)};
+\draw[-latex,align=center] ($(hs2SEnd.south) + (0, -4)$) -- ($(hs2End.south) + (0, -4)$) node [pos=0.5, above]{$AEAD_{K_2^{'}}.Enc$(application data)};
+\draw[-latex,align=center] ($(hs2End.south) + (0, -5)$) --  ($(hs2SEnd.south) + (0, -5)$)node [pos=0.5, above]{$AEAD_{K_2^{''}}.Enc$(key confirmation)};
+\draw[-latex,align=center]  ($(hs2End.south) + (0, -6)$) -- ($(hs2SEnd.south) + (0, -6)$) node [pos=0.5, above]{$AEAD_{K_2^{'''}}.Enc$(application data)};
 \node[below right, align=left] (captions) at ($(hs2End.south) + (0, -7)$){KEM.Ephemeral: Kyber\\KEM.Client: Classic McEliece\\KEM.Server: Classic McEliece\\};
  
 % verification if the session key is the same
