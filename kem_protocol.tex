@@ -41,22 +41,22 @@
 \node[below,text width = 5cm,align=right](kB) at (StaticS.south) { Knows: $pk_C$};
 %\node[below right , align=left] at (Server.south) {secret: $v:= g^x$ \\ other: salt};
 
-\draw[-latex,thick,align=center] ($(InitEnd.south) $) -- (InitSEnd) node [pos=0.5, above](handshake1) {$K_s \gets KDF(ss_S)$\\$ct_S$ , $AEAD_{K_S}.Enc(pk_e)$};
+\draw[-latex,align=center] ($(InitEnd.south) $) -- (InitSEnd) node [pos=0.5, above](handshake1) {$K_s \gets KDF(ss_S)$\\$ct_S$ , $AEAD_{K_S}.Enc(pk_e)$};
 \coordinate (hs1End) at ($(InitEnd.south)+(0,-3.4)$);
 \coordinate (hs1SEnd) at ($(InitSEnd.south) + (0, -3.4)$);
 % Client and Server: generate secret key
 \node[below left, align=right] (processServer) at (InitSEnd.south) {$ss_S \gets KEM_S.Decap(ct_S,sk_S)$\\  $pk_e\gets AEAD_{K_S}.Dec(ct_{pk_e})$\\ ($ss_e,ct_e) \gets KEM_e.Encap(pk_e)$ \\$(ss_C,ct_C)\gets  KEM_C.Encap(pk_C)$};
 
-\draw[-latex,thick,align=center] (hs1SEnd.south)  -- (hs1End.south) node [pos=0.5, above](handshake2) {$K_1\gets KDF(ss_S||ss_e)$\\$ ct_e$ , $ AEAD_{K_1}.Enc(ct_C)$};
+\draw[-latex,align=center] (hs1SEnd.south)  -- (hs1End.south) node [pos=0.5, above](handshake2) {$K_1\gets KDF(ss_S||ss_e)$\\$ ct_C$ , $ AEAD_{K_1}.Enc(ct_e)$};
 \coordinate (hs2End) at ($(InitEnd.south)+(0,-4)$);
 \coordinate (hs2SEnd) at ($(InitSEnd.south) + (0, -4)$);
 
-\node[below right, align=left] (processClient) at (hs2End){($ss_e) \gets KEM_e.Decap(ct_e,sk_e)$\\$ct_C\gets AEAD_{K_1}.Dec(ct_{ct_C})$\\$ss_C\gets KEM_S.Decap(ct_S,sk_S)$};
+\node[below right, align=left] (processClient) at (hs2End){$ss_C \gets KEM_C.Decap(ct_C,sk_C)$\\$ct_e\gets AEAD_{K_1}.Dec(ct_{ct_e})$\\$ss_C\gets KEM_C.Decap(ct_C,sk_C)$};
 
-\draw[-latex,thick,align=center] ($(hs2End.south) + (0, -3)$) -- ($(hs2SEnd.south) + (0, -3)$) node [pos=0.5, above]{$K_2,K_2^{'},K_2^{''},K_2^{'''}\gets KDF(ss_S||ss_e||ss_C)$\\$AEAD_{K_2}.Enc$(key confirmation)};
-\draw[-latex,thick,align=center] ($(hs2End.south) + (0, -4)$) -- ($(hs2SEnd.south) + (0, -4)$) node [pos=0.5, above]{$AEAD_{K_2^{'}}.Enc$(application data)};
-\draw[-latex,thick,align=center] ($(hs2SEnd.south) + (0, -5)$) -- ($(hs2End.south) + (0, -5)$) node [pos=0.5, above]{$AEAD_{K_2^{''}}.Enc$(key confirmation)};
-\draw[-latex,thick,align=center] ($(hs2SEnd.south) + (0, -6)$) -- ($(hs2End.south) + (0, -6)$) node [pos=0.5, above]{$AEAD_{K_2^{'''}}.Enc$(application data)};
+\draw[-latex,align=center] ($(hs2End.south) + (0, -3)$) -- ($(hs2SEnd.south) + (0, -3)$) node [pos=0.5, above]{$K_2,K_2^{'},K_2^{''},K_2^{'''}\gets KDF(ss_S||ss_e||ss_C)$\\$AEAD_{K_2}.Enc$(key confirmation)};
+\draw[-latex,align=center] ($(hs2End.south) + (0, -4)$) -- ($(hs2SEnd.south) + (0, -4)$) node [pos=0.5, above]{$AEAD_{K_2^{'}}.Enc$(application data)};
+\draw[-latex,align=center] ($(hs2SEnd.south) + (0, -5)$) -- ($(hs2End.south) + (0, -5)$) node [pos=0.5, above]{$AEAD_{K_2^{''}}.Enc$(key confirmation)};
+\draw[-latex,align=center] ($(hs2SEnd.south) + (0, -6)$) -- ($(hs2End.south) + (0, -6)$) node [pos=0.5, above]{$AEAD_{K_2^{'''}}.Enc$(application data)};
 %\node[box,below] (processServer) at ($(kB.south) + (0, -2)$) {$u \gets \hash(A, B)$ \\ $s_k \gets \hash((Av^u)^b)$};
  
 % verification if the session key is the same
