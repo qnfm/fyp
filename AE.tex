@@ -1,0 +1,22 @@
+\documentclass[tikz]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\newcommand{\altura}{.45cm}
+\usetikzlibrary{calc}
+
+\def\hash{\mathrm{H}}
+\newcommand\leftarrowS{\leftarrow\joinrel\smalldollar}
+\makeatletter
+\newcommand{\smalldollar}{\mathrel{\mathpalette\small@dollar\relax}}
+\newcommand{\small@dollar}[2]{%
+  \vcenter{\hbox{%
+    $#1\textnormal{\fontsize{0.7\dimexpr\f@size pt}{0}\selectfont\$}$%
+  }}%
+}
+\begin{document}
+$\begin{array}{rl}
+$$(pk,sk)&\leftarrowS KEM.Keygen()$$\\
+$$(ss,ct)&\leftarrowS KEM.Encapsulate(pk)$$\\
+$$ss&\gets\ KEM.Decapsulate(ct, sk)$$\\
+\end{array}$
+\end{document}

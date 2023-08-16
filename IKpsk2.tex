@@ -1,0 +1,28 @@
+\documentclass[tikz]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\newcommand{\altura}{.45cm}
+\usetikzlibrary{calc}
+
+\def\hash{\mathrm{H}}
+
+\begin{document}
+\label{not:IKpsk2}
+$
+\begin{array}{rl}
+\text{IKpsk2:}\\
+&\leftarrow \text{s}\\
+%\text{if }\tau \leq 64&\\& H'(X) \overset{\text{def}}{=} H_{\tau}(\tau ||X).\\
+%\text{else}&\\
+%& r = \lceil\tau/32\rceil-2;\\
+%&V_1\leftarrow H_{64}(\tau||X);\\
+%&V_2 \leftarrow H_{64}(V_1);\\
+&\cdots\\
+&\rightarrow \text{e, es, s, ss}\\
+&\leftarrow \text{e, ee, se, psk}\\
+%&V_r  \leftarrow H_{64}(V_{r-1}),\\
+%&V_{r+1} \leftarrow H_{\tau - 32r}(V_{r}).\\
+%&H'(X) \overset{\text{def}}{=} A_1||A_2||\ldots A_r||V_{r+1}.
+\end{array}
+$
+\end{document}

@@ -1,35 +1,76 @@
 \chapter{Evaluation}
 \label{chap:Evaluation}
 
-The Evaluation chapter should present a comparison of the work that forms the basis of the dissertation and existing work. At a higher level, it should demonstrate an awareness of the relationship of the dissertation work to the research area that it is based in.
+As the main question here is one of usability, the following will mainly be a performance comparison, comparing the proof-of-concept handshake protocol implementations to the default WireGuard protocol, as implemented in WireGuard-Go. To accommodate for any of the three higher security levels deﬁned in the Feature Speciﬁcation, only the handshake code was changed. Therefore, most focus will be put on the handshake computations, as well as initiation and response message transmissions.
+\section{Message Sizes}
+Adding more key exchange primitives to the handshake protocol obviously adds additional data, in the form of public keys and encapsulated values. This data needs to be transmitted in the initiation or response message.
+With PQ KEMs that data is relatively large for network transmissions, hundreds of Bytes up to hundreds of Kilobytes in the worst cases. Thus, packets may easily become larger than the Ethernet maximum transmission unit (MTU) of 1500 Bytes.
+Since WireGuard is based on UDP, there is no segmentation functionality on the Transport Layer. If large data is sent over UDP, packet fragmentation may happen on the IP layer. Relying on this functionality is considered fragile, and the IETF speciﬁcally advises against it. [8] This is because the IP standard allows routers to drop large packets silently.
+A way around IP fragmentation is to split the datagrams on the application layer.
+When using UDP, this can still be terrible for performance because the handshake will fail anytime one of the datagrams is lost. The more datagrams we need for one message, the higher the probability for losing one of them is. Thus, breaking up messages into more datagrams makes the handshake take longer on average.
+A datagram size of 1436 Bytes is reasonable for this, because according to analysis by Shannon and Moore [31] around 98$\%$ of MTUs are between 1484 1500 Bytes.
+Subtracting 8 Bytes for the UDP header and 40 Bytes for the possibility of an IPv6 header, we arrive at the number above. Also, the IPv6 standard recommends an MTU of at least 1500 Bytes, and requires acceptance of packets up to that same size. 
+Choosing cryptographic primitives with small key sizes is thus essential to prevent unnecessary overhead, in the form of excessive transmission times. Cryptographic primitives with excessively large public keys or encapsulated values have thus been excluded from all following considerations. For example, all code-based cryptosystems, which need many Kilobytes for a public key.
 
+\begin{table}[!ht]
+\begin{center}
+\begin{tabular}{|l|l|l|l|}
+\hline
+Primitive        & PublicKeySize & PrivateKeySize & CipherTextSize \\ \hline
+X25519           & 32            & 32             & 32             \\ \hline
+Kyber512         & 800           & 1632           & 768            \\ \hline
+NTRU LPRime      & 897           & 164            & 993            \\ \hline
+Streamlined NTRU & 994           & 1518           & 897            \\ \hline
+BIKE-L1          & 1541          & 5223           & 1573           \\ \hline
+HQC-128          & 2249          & 2289           & 4481           \\ \hline
+McEliece348864   & 261120        & 6492           & 96             \\ \hline
+\end{tabular}
+\end{center}
+\caption{Bytes needed for the NIST-PQC level I primitives}
+\end{table}
+\section{Individual runtime}
+\begin{table}[!ht]
+\begin{center}
+\begin{tabular}{|l|l|l|l|}
+\hline
+Runtime  & Key Generation & Encapsulation & Decapsulation \\ \hline
+mceliece348864f          & 51.88          & 0.35          & 19.70         \\ \hline
+mceliece460896f          & 166.49         & 0.66          & 43.96         \\ \hline
+kyber512                 & 0.02           & 0.01          & 0.01          \\ \hline
+kyber768                 & 0.03           & 0.02          & 0.02          \\ \hline
+BIKE-L1                  & 0.13           & 0.03          & 0.5           \\ \hline
+HQC-128                  & 0.03           & 0.05          & 0.09          \\ \hline
+\end{tabular}
+\end{center}
+\caption{Runtime for the NIST-PQC level I primitives (in millisecond)}
+\end{table}
 \section{Experiments}
 
-In the case where experiments have been carried out, the experimental setup and the values that were defined for the variables need to be presented in a table e.g. table~\ref{tab:experimentsetup}.
 
-\begin{table}[!h]
-\begin{center}
-	\begin{tabular}{|l|c|c|} 
-	\hline
- 	\bf Column 1  & \bf Column 2  & \bf Column 3 \\
-  	\hline
-	Row 1 & Item 1 & Item 2 \\
-	Row 2 & Item 1 & Item 2 \\
-	Row 3 & Item 1 & Item 2 \\
-	Row 4 & Item 1 & Item 2 \\
-	\hline
-	\end{tabular}
-\end{center}
-\caption[Variables of the experiment]{Caption that explains the table to the reader}	
-\label{tab:experimentsetup}
-\end{table}
+
 
 
 \section{Results}
+\begin{table}[!ht]
+\begin{center}
+\begin{tabular}{|l|r|r|rrr|}
+\hline
+\multirow{2}{*}{Protocol}                                                            & \multicolumn{1}{l|}{\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}Initiation size\\ (bytes)\end{tabular}}} & \multicolumn{1}{l|}{\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}Response size\\ (bytes)\end{tabular}}} & \multicolumn{3}{l|}{Time in microseconds}                                              \\ \cline{4-6} 
+                                                                                     & \multicolumn{1}{l|}{}                                                                                   & \multicolumn{1}{l|}{}                                                                                 & \multicolumn{1}{l|}{Server} & \multicolumn{1}{l|}{Client} & \multicolumn{1}{l|}{Total} \\ \hline
+\begin{tabular}[c]{@{}l@{}}WireGuard\\ (original)\end{tabular}                       & 148                                                                                                     & 92                                                                                                    & \multicolumn{1}{r|}{0.36}   & \multicolumn{1}{r|}{0.47}   & 1.37                       \\ \hline
+\begin{tabular}[c]{@{}l@{}}KEM-WireGuard\\ (kyber512 only/time-optimal)\end{tabular} & 1700                                                                                                    & 1596                                                                                                  & \multicolumn{1}{r|}{0.21}   & \multicolumn{1}{r|}{0.34}   & 0.57                       \\ \hline
+\begin{tabular}[c]{@{}l@{}}KEM-WireGuard\\ (mcliece348864f only)\end{tabular}        & 261348                                                                                                  & 252                                                                                                   & \multicolumn{1}{r|}{20.82}  & \multicolumn{1}{r|}{91.47}  & 133.36                     \\ \hline
+\begin{tabular}[c]{@{}l@{}}KEM-WireGuard\\ (BIKE-L1)\end{tabular}                    & 3246                                                                                                    & 3206                                                                                                  & \multicolumn{1}{r|}{1.46}   & \multicolumn{1}{r|}{3.65}   & 4.60                       \\ \hline
+\begin{tabular}[c]{@{}l@{}}KEM-WireGuard\\ (HQC-128)\end{tabular}                    & 6862                                                                                                    & 9022                                                                                                  & \multicolumn{1}{r|}{0.49}   & \multicolumn{1}{r|}{0.61}   & 0.84                       \\ \hline
+\begin{tabular}[c]{@{}l@{}}KEM-WireGuard\\ (M\&K/size-optimal)\end{tabular}          & 1028                                                                                                    & 252                                                                                                   & \multicolumn{1}{r|}{20.40}  & \multicolumn{1}{r|}{20.95}  & 41.47                      \\ \hline
+\end{tabular}
+\end{center}
+\caption{Runtime for the NIST-PQC level I primitives}
+\end{table}
 
-Figures that present results such as figure~\ref{fig:measurements} need to display descriptions of the axes, the units and scales of the measurements, statistical values, etc. Where measurements were taken from experiments, error bars or confidence intervals need to be provided to give the reader an indication of the spread of the measurements.
-
-\includescalefigure{fig:measurements}{Measurement of System Wakeups}{Long caption that describes the figure to the reader}{1}{measurements.png}
+%Figures that present results such as figure~\ref{fig:measurements} need to display descriptions of the axes, the units and scales of the measurements, statistical values, etc. Where measurements were taken from experiments, error bars or confidence intervals need to be provided to give the reader an indication of the spread of the measurements.
+%
+%\includescalefigure{fig:measurements}{Measurement of System Wakeups}{Long caption that describes the figure to the reader}{1}{measurements.png}
 
 
 \section{Summary}
