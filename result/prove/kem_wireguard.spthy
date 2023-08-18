@@ -1,20 +1,3 @@
-/*
- * Protocol:    Post-Quantum Wireguard protocol
- * Modeler:     Kai-Chun Ning
- * Date:        2020
- * Based on:    Joint work of Kevin Milner & Jason Donenfeld, see
-                https://www.wireguard.com/formal-verification/
- * command:     Due to memory requirements, it is advised to prove each group
- *              of lemmas (or even each lemma) separately with the command:
- *              tamarin_prover --prove=$GROUP_PREFIX pq_wireguard.spthy
- *
- * TODO:
- * - Implement identity hiding with observational equivalence, instead of
- *      surrogate-based property.
- * - Prove indistinguishability using observational equivalence.
- * - Reduce memory requirement.
- */
-
 theory PQWireGuard
 begin
 heuristic: i
